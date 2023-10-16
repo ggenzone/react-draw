@@ -1,9 +1,10 @@
 import { Separator } from '@/components/ui/separator'
+import { Slider } from '@/components/ui/slider'
 import { useDraw } from '@/hooks/use-draw'
 import { useState } from 'react'
 
 export default function PlaygroundPage () {
-  const [color, setColor] = useState<string>('#ccc')
+  const [color, setColor] = useState<string>('#cccccc')
   const [lineWidth, setLineWidth] = useState<number>(5)
   const { canvasRef, onMouseDown } = useDraw({ onDraw })
 
@@ -39,14 +40,14 @@ export default function PlaygroundPage () {
             <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
               <div className="hidden flex-col space-y-4 sm:flex md:order-2">
                 Widgets
-                <div className='mt-2 flex items-center justify-between'>
-                  <label className='block'> Color
+                <div className='mt-2 flex items-center justify-between '>
+                  <label className='w-full'> Color
                     <input type='color' onChange={(ev) => { setColor(ev.target.value) }} value={color} />
                   </label>
                 </div>
                 <div className='mt-2 flex items-center justify-between'>
-                  <label className='block'> Brush
-                    <input type='range' min={3} max={10} onChange={(ev) => { setLineWidth(Number(ev.target.value)) }} value={lineWidth} />
+                  <label className='w-full'> Brush
+                    <Slider defaultValue={[lineWidth]} max={15} step={1} onValueCommit={(values) => { setLineWidth(values[0] ?? 5) } }/>
                   </label>
                 </div>
               </div>
