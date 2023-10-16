@@ -6,24 +6,36 @@ import { useDraw } from '@/hooks/use-draw'
 import { useState } from 'react'
 
 export default function PlaygroundPage () {
+  const [shape, setShape] = useState<string>('brush')
   const [color, setColor] = useState<string>('#cccccc')
   const [lineWidth, setLineWidth] = useState<number>(5)
   const { canvasRef, onMouseDown, save, clear } = useDraw({ onDraw })
 
-  function onDraw ({ prevPoint, ctx, currentPoint }: Draw) {
-    const startPoint = prevPoint ?? currentPoint
+  function onDraw ({ prevPoint, ctx, currentPoint, initialPoint, snapshot }: Draw) {
+    if (shape === 'brush') {
+      const startPoint = prevPoint ?? currentPoint
+      ctx.beginPath()
+      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = color
+      ctx.moveTo(startPoint.x, startPoint.y)
+      ctx.lineTo(currentPoint.x, currentPoint.y)
+      ctx.stroke()
 
-    ctx.beginPath()
-    ctx.lineWidth = lineWidth
-    ctx.strokeStyle = color
-    ctx.moveTo(startPoint.x, startPoint.y)
-    ctx.lineTo(currentPoint.x, currentPoint.y)
-    ctx.stroke()
+      ctx.fillStyle = color
+      ctx.beginPath()
+      ctx.arc(startPoint.x, startPoint.y, 2, 0, 2 * Math.PI)
+      ctx.fill()
+    }
 
-    ctx.fillStyle = color
-    ctx.beginPath()
-    ctx.arc(startPoint.x, startPoint.y, 2, 0, 2 * Math.PI)
-    ctx.fill()
+    if (shape === 'rectangle') {
+      if (snapshot !== null) {
+        ctx.putImageData(snapshot, 0, 0)
+      }
+      const startPoint = initialPoint ?? currentPoint
+      ctx.strokeRect(startPoint.x, startPoint.y, currentPoint.x - startPoint.x, currentPoint.y - startPoint.y)
+      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = color
+    }
   }
 
   return (
@@ -42,13 +54,13 @@ export default function PlaygroundPage () {
             <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
               <div className="hidden flex-col space-y-4 sm:flex md:order-2 border rounded-sm border-black p-4 bg-background">
                 <div className='mt-2 flex items-center justify-between '>
-                  <label className='w-full'>Figure </label>
-                  <Select>
+                  <label className='w-full'>Shape </label>
+                  <Select onValueChange={(value) => { setShape(value) }} defaultValue={shape}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Figure" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="line">Line</SelectItem>
+                      <SelectItem value="brush">Brush</SelectItem>
                       <SelectItem value="rectangle">Rectable</SelectItem>
                       <SelectItem value="circle">Circle</SelectItem>
                     </SelectContent>

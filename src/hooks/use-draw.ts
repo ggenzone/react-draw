@@ -5,12 +5,28 @@ interface UseDrawProps {
   onDraw: ({ ctx, currentPoint, prevPoint }: Draw) => void 
 }
 
+
 export const useDraw = ({ onDraw }: UseDrawProps) => {
+  const snapshot = useRef<ImageData | null>(null)
   const [mouseDown, setMouseDown] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const prevPoint = useRef<Point | null>(null)
+  const initialPoint = useRef<Point | null>(null)
 
-  const onMouseDown = () => { setMouseDown(true) }
+  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    const ctx = canvasRef.current?.getContext('2d')
+    if (canvasRef?.current == null || ctx == null) {
+      return
+    }
+
+    const rect = canvasRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    initialPoint.current = { x, y }
+
+    snapshot.current = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height)
+    setMouseDown(true)
+  }
 
   const clear = () => {
     const ctx = canvasRef.current?.getContext('2d')
@@ -49,11 +65,11 @@ export const useDraw = ({ onDraw }: UseDrawProps) => {
         return
       }
 
-      onDraw({ctx, currentPoint, prevPoint: prevPoint.current })
+      onDraw({ ctx, currentPoint, prevPoint: prevPoint.current, initialPoint: initialPoint.current, snapshot: snapshot.current })
       prevPoint.current = currentPoint
     }
 
-    const computePointInCanvas = (e:MouseEvent) => {
+    const computePointInCanvas = (e: MouseEvent) => {
       const canvas = canvasRef.current
 
       if (canvas === null) {
