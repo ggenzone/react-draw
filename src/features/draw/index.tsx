@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { useDraw } from '@/hooks/use-draw'
@@ -6,7 +7,7 @@ import { useState } from 'react'
 export default function PlaygroundPage () {
   const [color, setColor] = useState<string>('#cccccc')
   const [lineWidth, setLineWidth] = useState<number>(5)
-  const { canvasRef, onMouseDown } = useDraw({ onDraw })
+  const { canvasRef, onMouseDown, clear } = useDraw({ onDraw })
 
   function onDraw ({ prevPoint, ctx, currentPoint }: Draw) {
     const startPoint = prevPoint ?? currentPoint
@@ -49,6 +50,9 @@ export default function PlaygroundPage () {
                   <label className='w-full'> Brush
                     <Slider defaultValue={[lineWidth]} max={15} step={1} onValueCommit={(values) => { setLineWidth(values[0] ?? 5) } }/>
                   </label>
+                </div>
+                <div className='mt-2 flex items-center justify-between'>
+                  <Button variant='default' onClick={clear}>Clear canvas</Button>
                 </div>
               </div>
               <div className="md:order-1">
