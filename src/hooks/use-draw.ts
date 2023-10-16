@@ -1,3 +1,4 @@
+import { downloadImage } from '@/lib/save-file'
 import { useEffect, useRef, useState } from 'react'
 
 interface UseDrawProps {
@@ -18,6 +19,19 @@ export const useDraw = ({ onDraw }: UseDrawProps) => {
     }
 
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+  }
+
+  const save = () => {
+    if (canvasRef?.current === null) {
+      return
+    }
+    const d = canvasRef.current.toDataURL('image/png')
+
+    downloadImage(d, 'export.png')
+    
+    /*const w = window.open('about:blank', 'image from canvas')
+    w?.document.write("<img src='" + d + "' alt='from canvas'/>")
+    console.log('Saved!')*/
   }
 
   useEffect(() => {
@@ -64,5 +78,5 @@ export const useDraw = ({ onDraw }: UseDrawProps) => {
     }
   }, [onDraw])
 
-  return { canvasRef, onMouseDown, clear }
+  return { canvasRef, onMouseDown, save, clear }
 }

@@ -7,7 +7,7 @@ import { useState } from 'react'
 export default function PlaygroundPage () {
   const [color, setColor] = useState<string>('#cccccc')
   const [lineWidth, setLineWidth] = useState<number>(5)
-  const { canvasRef, onMouseDown, clear } = useDraw({ onDraw })
+  const { canvasRef, onMouseDown, save, clear } = useDraw({ onDraw })
 
   function onDraw ({ prevPoint, ctx, currentPoint }: Draw) {
     const startPoint = prevPoint ?? currentPoint
@@ -52,7 +52,11 @@ export default function PlaygroundPage () {
                   </label>
                 </div>
                 <div className='mt-2 flex items-center justify-between'>
-                  <Button variant='default' onClick={clear}>Clear canvas</Button>
+                  <Button variant='secondary' onClick={clear} className='w-full' size='sm'>Clear canvas</Button>
+                </div>
+
+                <div className='mt-2 flex items-center justify-between'>
+                  <Button variant='default' onClick={save} className='w-full' size='sm'>Save</Button>
                 </div>
               </div>
               <div className="md:order-1">
