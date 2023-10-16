@@ -27,7 +27,7 @@ export default function PlaygroundPage () {
       ctx.fill()
     }
 
-    if (shape === 'rectangle') {
+    if (shape === 'rectangle-border') {
       if (snapshot !== null) {
         ctx.putImageData(snapshot, 0, 0)
       }
@@ -35,6 +35,64 @@ export default function PlaygroundPage () {
       ctx.strokeRect(startPoint.x, startPoint.y, currentPoint.x - startPoint.x, currentPoint.y - startPoint.y)
       ctx.lineWidth = lineWidth
       ctx.strokeStyle = color
+    }
+
+    if (shape === 'rectangle') {
+      if (snapshot !== null) {
+        ctx.putImageData(snapshot, 0, 0)
+      }
+      const startPoint = initialPoint ?? currentPoint
+      ctx.fillRect(startPoint.x, startPoint.y, currentPoint.x - startPoint.x, currentPoint.y - startPoint.y)
+      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = color
+    }
+
+    if (shape === 'circle') {
+      if (snapshot !== null) {
+        ctx.putImageData(snapshot, 0, 0)
+      }
+      const startPoint = initialPoint ?? currentPoint
+      const radius = Math.sqrt(Math.pow(currentPoint.x - startPoint.x, 2) + Math.pow(currentPoint.y - startPoint.y, 2))
+      ctx.beginPath()
+
+      ctx.arc(startPoint.x, startPoint.y, radius, 0, 2 * Math.PI)
+      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = color
+      ctx.stroke() //ctx.fill 
+    }
+
+    if (shape === 'triangle') {
+      if (snapshot !== null) {
+        ctx.putImageData(snapshot, 0, 0)
+      }
+      const startPoint = initialPoint ?? currentPoint
+
+      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = color
+
+      ctx.beginPath()
+      ctx.moveTo(startPoint.x, startPoint.y)
+      ctx.lineTo(currentPoint.x, currentPoint.y)
+      ctx.lineTo((startPoint.x * 2) - currentPoint.x, currentPoint.y)
+      ctx.closePath()
+
+      ctx.stroke() //ctx.fill
+    }
+
+
+    if (shape === 'line') {
+      if (snapshot !== null) {
+        ctx.putImageData(snapshot, 0, 0)
+      }
+      const startPoint = initialPoint ?? currentPoint
+      ctx.lineWidth = lineWidth
+      ctx.strokeStyle = color
+
+      ctx.beginPath()
+      ctx.moveTo(startPoint.x, startPoint.y)
+      ctx.lineTo(currentPoint.x, currentPoint.y)
+
+      ctx.stroke() 
     }
   }
 
@@ -62,7 +120,10 @@ export default function PlaygroundPage () {
                     <SelectContent>
                       <SelectItem value="brush">Brush</SelectItem>
                       <SelectItem value="rectangle">Rectable</SelectItem>
+                      <SelectItem value="rectangle-border">Rectable border</SelectItem>
                       <SelectItem value="circle">Circle</SelectItem>
+                      <SelectItem value="triangle">Triangle</SelectItem>
+                      <SelectItem value="line">Line</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
