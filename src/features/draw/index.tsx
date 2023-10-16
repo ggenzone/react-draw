@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { useDraw } from '@/hooks/use-draw'
@@ -38,19 +39,33 @@ export default function PlaygroundPage () {
         <Separator />
         <div className="flex-1">
           <div className="container h-full py-6">
-            <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-              <div className="hidden flex-col space-y-4 sm:flex md:order-2">
-                Widgets
+            <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
+              <div className="hidden flex-col space-y-4 sm:flex md:order-2 border rounded-sm border-black p-4 bg-background">
                 <div className='mt-2 flex items-center justify-between '>
-                  <label className='w-full'> Color
-                    <input type='color' onChange={(ev) => { setColor(ev.target.value) }} value={color} />
-                  </label>
+                  <label className='w-full'>Figure </label>
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Figure" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="line">Line</SelectItem>
+                      <SelectItem value="rectangle">Rectable</SelectItem>
+                      <SelectItem value="circle">Circle</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+                <Separator />
+                <div className='mt-2 flex items-center justify-between '>
+                  <label className='w-full'> Color </label>
+                  <input type='color' onChange={(ev) => { setColor(ev.target.value) }} value={color} />
+                </div>
+                <Separator />
                 <div className='mt-2 flex items-center justify-between'>
-                  <label className='w-full'> Brush
-                    <Slider defaultValue={[lineWidth]} max={15} step={1} onValueCommit={(values) => { setLineWidth(values[0] ?? 5) } }/>
-                  </label>
+                  <label className='w-full'> Brush </label>
+                  <Slider defaultValue={[lineWidth]} max={15} step={1} onValueCommit={(values) => { setLineWidth(values[0] ?? 5) } }/>
                 </div>
+                <Separator />
+                <div className='flex flex-grow'></div>
                 <div className='mt-2 flex items-center justify-between'>
                   <Button variant='secondary' onClick={clear} className='w-full' size='sm'>Clear canvas</Button>
                 </div>
