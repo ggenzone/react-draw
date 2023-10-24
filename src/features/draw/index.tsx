@@ -135,6 +135,35 @@ export default function PlaygroundPage () {
     }
   }
 
+  const onTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    setDrawing(true)
+    const currentPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    if (tool === 'rectangle') {
+      const element = createElement({ shape: 'rectangle', currentPoint })
+      pushElement(element)
+    }
+  }
+
+  const onTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (drawing) {
+      const currentPoint: Point = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+
+      const index = elements.length - 1
+      const oldElement = elements[index]
+
+      if (oldElement.name === 'rectangle') {
+        const width = currentPoint.x - oldElement.x
+        const height = currentPoint.y - oldElement.y
+        const element = { ...oldElement, width, height }
+        updateElement(index, element)
+      }
+    }
+  }
+
+  const onTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    setDrawing(false)
+  }
+
   useEffect(() => {
     console.log('Drawing' + stats.current)
     stats.current++
@@ -173,6 +202,9 @@ export default function PlaygroundPage () {
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
         width={window.innerWidth}
         height={window.innerHeight}
       >
