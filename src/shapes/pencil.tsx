@@ -1,6 +1,15 @@
-import { type BasicShape, type DrawFunctionProps } from './basic'
+import {
+  type BasicShape,
+  type DrawFunctionProps,
+  type OverFunctionProps,
+  type Element,
+  type UpdateFunctionProps,
+  type CreateFunctionProps,
+  type MoveFunctionProps
+} from './basic'
 
-function draw (props: DrawFunctionProps) {
+function draw (_props: DrawFunctionProps) {
+  /*
   const { context, currentPoint, lineWidth, color, prevPoint } = props
 
   const startPoint = prevPoint ?? currentPoint
@@ -15,9 +24,36 @@ function draw (props: DrawFunctionProps) {
   context.beginPath()
   context.arc(startPoint.x, startPoint.y, 2, 0, 2 * Math.PI)
   context.fill()
+  */
+}
+
+function over (_props: OverFunctionProps) {
+  return false
+}
+
+
+function startDrawing (_props: CreateFunctionProps): Element {
+  throw new Error('Not implemented')
+}
+
+function updateDrawing (_props: UpdateFunctionProps): Element {
+  throw new Error('Not implemented')
+}
+
+function endDrawing (_props: UpdateFunctionProps): Element {
+  throw new Error('Not implemented')
+}
+
+function move (_props: MoveFunctionProps): Element {
+  throw new Error('Not implemented')
 }
 
 export const Pencil: BasicShape = {
   name: 'pencil',
-  draw
+  startDrawing,
+  updateDrawing,
+  endDrawing,
+  draw,
+  move,
+  over
 }

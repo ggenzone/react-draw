@@ -1,6 +1,15 @@
-import { type BasicShape, type DrawFunctionProps } from './basic'
+import {
+  type BasicShape,
+  type DrawFunctionProps,
+  type OverFunctionProps,
+  type Element,
+  type UpdateFunctionProps,
+  type CreateFunctionProps,
+  type MoveFunctionProps
+} from './basic'
 
-function draw (props: DrawFunctionProps) {
+function draw (_props: DrawFunctionProps) {
+  /*
   const { initialPoint, context, snapshot, currentPoint, lineWidth, color } = props
 
   if (snapshot !== null) {
@@ -14,9 +23,35 @@ function draw (props: DrawFunctionProps) {
   context.lineWidth = lineWidth
   context.strokeStyle = color
   context.stroke() //ctx.fill
+  */
+}
+
+function over (_props: OverFunctionProps) {
+  return false
+}
+
+function startDrawing (_props: CreateFunctionProps): Element {
+  throw new Error('Not implemented')
+}
+
+function updateDrawing (_props: UpdateFunctionProps): Element {
+  throw new Error('Not implemented')
+}
+
+function endDrawing (_props: UpdateFunctionProps): Element {
+  throw new Error('Not implemented')
+}
+
+function move (_props: MoveFunctionProps): Element {
+  throw new Error('Not implemented')
 }
 
 export const Circle: BasicShape = {
   name: 'circle',
-  draw
+  startDrawing,
+  updateDrawing,
+  endDrawing,
+  draw,
+  move,
+  over
 }

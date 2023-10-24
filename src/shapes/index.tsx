@@ -3,8 +3,9 @@ import { Circle } from './circle'
 import { Triangle } from './triangle'
 import { Pencil } from './pencil'
 import { Line } from './line'
+import { type Shapes } from './basic'
 
-export const ShapeHandler = (shape: string) => {
+export const ShapeHandler = (shape: Shapes) => {
   switch (shape) {
     case 'rectangle':
       return Rectangle
