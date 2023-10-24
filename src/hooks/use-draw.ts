@@ -34,7 +34,7 @@ export const useDraw = ({ onDraw }: UseDrawProps) => {
       return
     }
 
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
   }
 
   const save = () => {

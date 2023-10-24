@@ -8,6 +8,7 @@ module.exports = {
     './src/**/*.{ts,tsx}',
 	],
   theme: {    
+    darkMode: ['class'],
     backgroundImage: {
       // https://heropatterns.com/
       'hero-pattern': "url('/img/hero-pattern.svg')",

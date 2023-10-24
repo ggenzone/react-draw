@@ -3,6 +3,8 @@ interface Point {
   y: number
 }
 
+type Shapes = 'rectangle' | 'circle' | 'brush' | 'pencil' | 'triangle' | 'line'
+
 interface Draw {
   ctx: CanvasRenderingContext2D
   currentPoint: Point
