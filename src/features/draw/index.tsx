@@ -3,7 +3,7 @@ import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { useDraw } from '@/hooks/use-draw'
 import { ShapeHandler } from '@/shapes'
-import { ArrowLeftIcon, ArrowRightIcon, CircleIcon, CursorArrowIcon, DownloadIcon, HamburgerMenuIcon, HandIcon, LineHeightIcon, Pencil1Icon, QuestionMarkCircledIcon, Share1Icon, SlashIcon, SquareIcon, TrashIcon, TriangleDownIcon, VercelLogoIcon } from '@radix-ui/react-icons'
+import { ArrowLeftIcon, ArrowRightIcon, CircleIcon, CursorArrowIcon, DownloadIcon, HamburgerMenuIcon, HandIcon, Pencil1Icon, QuestionMarkCircledIcon, Share1Icon, SlashIcon, SquareIcon, TrashIcon, VercelLogoIcon } from '@radix-ui/react-icons'
 import { useEffect, useRef, useState } from 'react'
 
 type Shapes = 'rectangle' | 'line'
@@ -160,7 +160,7 @@ export default function PlaygroundPage () {
     }
   }
 
-  const onTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+  const onTouchEnd = (_e: React.TouchEvent<HTMLCanvasElement>) => {
     setDrawing(false)
   }
 

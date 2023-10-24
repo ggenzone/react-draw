@@ -1,10 +1,9 @@
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { useDraw } from '@/hooks/use-draw'
 import { ShapeHandler } from '@/shapes'
-import { ArrowLeftIcon, ArrowRightIcon, CircleIcon, CursorArrowIcon, DownloadIcon, HamburgerMenuIcon, HandIcon, LineHeightIcon, Pencil1Icon, QuestionMarkCircledIcon, Share1Icon, SlashIcon, SquareIcon, TrashIcon, TriangleDownIcon, VercelLogoIcon } from '@radix-ui/react-icons'
+import { ArrowLeftIcon, ArrowRightIcon, CircleIcon, CursorArrowIcon, DownloadIcon, HamburgerMenuIcon, HandIcon, Pencil1Icon, QuestionMarkCircledIcon, Share1Icon, SlashIcon, SquareIcon, TrashIcon, VercelLogoIcon } from '@radix-ui/react-icons'
 import { useState } from 'react'
 
 export default function PlaygroundPage () {
