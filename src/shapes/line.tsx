@@ -82,15 +82,29 @@ function startDrawing (props: CreateFunctionProps): Element {
   return line
 }
 
+function distance (a: Point, b: Point) {
+  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+}
+
 function over (props: OverFunctionProps) {
   const { element, currentPoint } = props
 
   if (element.name === 'line') {
     console.log('over line')
+
+    const a: Point = { x: element.x, y: element.y }
+    const b: Point = { x: element.x + element.width, y: element.y + element.height }
+
+    const offset = distance(a, b) - distance(a, currentPoint) - distance(b, currentPoint)
+
+    return Math.abs(offset) < 2
+
+    /* Chequea si esta en el rectangulo que contiene a la linea 
     const insideXAxis = (element.x <= currentPoint.x) && (currentPoint.x < element.x + element.width)
     const insideYAxis = (element.y <= currentPoint.y) && (currentPoint.y < element.y + element.height)
 
     return insideXAxis && insideYAxis
+    */
   }
 
   return false
@@ -113,7 +127,6 @@ function endDrawing (props: UpdateFunctionProps): Element {
   const { element: oldElement } = props
 
   if (oldElement.name === 'line') {
-    
     const width = oldElement.width
     const height = oldElement.height
     const element = { ...oldElement, width, height }

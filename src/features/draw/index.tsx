@@ -15,12 +15,13 @@ import {
   SquareIcon,
   VercelLogoIcon
 } from '@radix-ui/react-icons'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { type Properties, type Element } from '../../shapes/basic'
 
-import { useHistoryElements } from './use-history-state'
+import { useHistory} from './use-history-state'
 import { getElementAtPosition, getIndexElementAtPosition } from './factory'
 import { ShapeHandler } from '@/shapes'
+import { ModeToggle } from '@/components/mode-toggle'
 
 
 export default function PlaygroundPage () {
@@ -30,17 +31,35 @@ export default function PlaygroundPage () {
   const [tool, setTool] = useState('rectangle')
   const [color, setColor] = useState<string>('#cccccc')
   const [lineWidth, setLineWidth] = useState<number>(5)
-  const [selected, setSelected] = useState<Element | null>(null)
 
-  const { elements, pushElement, updateElement, undo, redo } = useHistoryElements<Element>([])
+  const [selected, setSelected] = useState<Element | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1)
+
+  const { elements, setElements, pushElement, updateElement, undo, redo } = useHistory<Element>([])
 
   const [action, setAction] = useState('none')
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  const changeCurrentColor = (color: string) => {
+    if (selectedIndex !== -1) {
+      const selectedElement = elements[selectedIndex]
+      if (selectedElement.name === 'rectangle') {
+        updateElement(selectedIndex, {...selectedElement, backgroundColor: color })
+      }
+    }
+  }
+
   const onDown = (currentPoint: Point) => {
     if (tool === 'selector') {
+      if (selectedIndex !== -1) {
+        const selectedElement = elements[selectedIndex]
+        updateElement(selectedIndex, {...selectedElement, selected: false })
+        setSelectedIndex(-1)
+      }
+
       const index = getIndexElementAtPosition(elements, currentPoint)
       if (index !== -1) {
+        setSelectedIndex(index)
         const selectedElement = elements[index] ?? undefined
         if ( selectedElement !== undefined) {
           selectedElement.selected = true
@@ -50,11 +69,11 @@ export default function PlaygroundPage () {
           setOffset(offset)
           setSelected(selectedElement)
           updateElement(index, selectedElement)
-          console.log('moving')
         }
       } else {
         setSelected(null)
       }
+      setElements(prev => prev)
     } else {
       if (['rectangle', 'line', 'circle', 'triangle'].includes(tool)) {
         const shape = tool as Shapes
@@ -82,7 +101,6 @@ export default function PlaygroundPage () {
         const oldElement = elements[index]
 
         if (action === 'drawing') {
-          console.log('drawing')
           const newElement = ShapeHandler(oldElement.name).updateDrawing({ element: oldElement, currentPoint })
           updateElement(index, newElement)
         } else if (action === 'moving' && offset != null) {
@@ -103,6 +121,7 @@ export default function PlaygroundPage () {
         if (action === 'drawing') {
           const newElement = ShapeHandler(oldElement.name).endDrawing({ element: oldElement, currentPoint })
           updateElement(index, newElement)
+          // setTool('selector')
         }
       }
       setSelected(null)
@@ -147,8 +166,7 @@ export default function PlaygroundPage () {
     onUp({ x: e.touches[0].clientX, y: e.touches[0].clientY })
   }
 
-  useEffect(() => {
-    console.log('Drawing' + stats.current)
+  useLayoutEffect(() => {
     stats.current++
 
     /**
@@ -175,6 +193,23 @@ export default function PlaygroundPage () {
     })
   }, [canvasRef, elements])
 
+  useEffect(() => {
+    const undoRedoFunction = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'z') {
+        if (event.shiftKey) {
+          redo()
+        } else {
+          undo()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', undoRedoFunction)
+    return () => {
+      window.removeEventListener('keydown', undoRedoFunction)
+    }
+  }, [undo, redo])
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <canvas
@@ -194,33 +229,32 @@ export default function PlaygroundPage () {
       <div className="absolute bottom-0 left-0 p-2 ">
         <div className='flex'>
 
-          <div className='bg-gray-200 rounded-md cursor-none flex items-center'>
+          <div className='rounded-md cursor-none flex items-center bg-card border'>
             <Button variant='ghost' size='sm'>-</Button>
             <Separator orientation='vertical'/>
-            <Separator orientation='vertical' className='bg-gray-400 '/>
-            <span className='px-1'>100 %</span>
-            <Separator orientation='vertical' className='bg-gray-400 '/>
+            <span className='px-2'>100%</span>
+            <Separator orientation='vertical'/>
             <Button variant='ghost' size='sm'>+</Button>
           </div>
 
-          <div className='bg-gray-200 rounded-md cursor-none flex items-center ml-2'>
-            <Button variant='ghost' size='sm' onClick={undo}><ArrowLeftIcon className='h-4 w-4 mr-2'/> Undo</Button>
-            <Separator orientation='vertical' className='bg-gray-400 '/>
-            <Button variant='ghost' size='sm' onClick={redo}>Redo <ArrowRightIcon className='h-4 w-4 ml-2' /></Button>
+          <div className='rounded-md cursor-none flex items-center ml-2 bg-card border'>
+            <Button variant='ghost' size='sm' onClick={undo}><ArrowLeftIcon className='h-4 w-4 mr-2'/></Button>
+            <Separator orientation='vertical'/>
+            <Button variant='ghost' size='sm' onClick={redo}><ArrowRightIcon className='h-4 w-4 ml-2' /></Button>
           </div>
         </div>
       </div>
 
       <div className='absolute top-0 left-1/2 transform -translate-x-1/2  p-2'>
-        <div className='flex items-center bg-white gap-2 w-full'>
+        <div className='flex items-center gap-2 w-full bg-card border rounded-sm'>
           <div className='flex items-center justify-between'>
-            <Button size='icon' variant='ghost' className='rounded-none border border-grey-200 rounded-l'>
+            <Button size='icon' variant='ghost' className='rounded-none border rounded-l'>
               <HandIcon className='h-4 w-4'/>
             </Button>
             <Button
               size='icon'
-              variant={tool === 'selector' ? 'default' : 'ghost' }
-              className='rounded-none border border-grey-200'
+              variant={tool === 'selector' ? 'secondary' : 'ghost' }
+              className='rounded-none border'
               onClick={() => { setTool('selector') } }
             >
               <CursorArrowIcon className='h-4 w-4' />
@@ -228,7 +262,7 @@ export default function PlaygroundPage () {
             <Button
               size='icon'
               variant={tool === 'pencil' ? 'default' : 'ghost' }
-              className='rounded-none border border-grey-200'
+              className='rounded-none border'
               onClick={() => { setTool('pencil') } }
             >
               <Pencil1Icon className='h-4 w-4' />
@@ -236,7 +270,7 @@ export default function PlaygroundPage () {
             <Button
               size='icon'
               variant={tool === 'circle' ? 'default' : 'ghost' }
-              className='rounded-none border border-grey-200'
+              className='rounded-none border'
               onClick={() => { setTool('circle') } }
             >
               <CircleIcon className='h-4 w-4' />
@@ -244,7 +278,7 @@ export default function PlaygroundPage () {
             <Button
               size='icon'
               variant={tool === 'rectangle' ? 'default' : 'ghost' }
-              className='rounded-none border border-grey-200'
+              className='rounded-none border'
               onClick={() => { setTool('rectangle') } }
             >
               <SquareIcon className='h-4 w-4' />
@@ -252,7 +286,7 @@ export default function PlaygroundPage () {
             <Button
               size='icon'
               variant={tool === 'triangle' ? 'default' : 'ghost' }
-              className='rounded-none border border-grey-200'
+              className='rounded-none border'
               onClick={() => { setTool('triangle') } }
             >
               <VercelLogoIcon className='h-4 w-4' />
@@ -260,7 +294,7 @@ export default function PlaygroundPage () {
             <Button
               size='icon'
               variant={tool === 'line' ? 'default' : 'ghost' }
-              className='rounded-none border border-grey-200 rounded-r'
+              className='rounded-none border rounded-r'
               onClick={() => { setTool('line') } }
             >
               <SlashIcon className='h-4 w-4' />
@@ -272,26 +306,30 @@ export default function PlaygroundPage () {
         </div>
       </div>
       <div className="absolute bottom-0 right-0 p-2">
-        <div className='bg-white'>
-          <Button size='icon' variant='outline'>
+        <div className='bg-card'>
+          <ModeToggle/>
+          <Button size='icon' variant='outline' className='ml-1'>
             <QuestionMarkCircledIcon className='h-4 w-4'/>
           </Button>
         </div>
       </div>
       <div className="absolute top-0 left-0 p-2">
-        <div className='bg-white'>
+        <div className='bg-card'>
           <Button size='icon' variant='outline'>
             <HamburgerMenuIcon className='h-4 w-4'/>
           </Button>
         </div>
       </div>
-      <div className="absolute top-0 left-0 p-2 w-[200px] mt-16">
-        <div className='bg-white border w-[200px] h-[500px]'>
-          Panel
+      {selectedIndex !== -1 && (
+        <div className="absolute top-0 left-0 p-2 w-[200px] mt-16">
+          <div className='bg-card border w-[200px] h-[500px]'>
+            Panel
+            <input type='color' onChange={(ev) => { changeCurrentColor(ev.target.value) }} defaultValue={color} />
+          </div>
         </div>
-      </div>
+      )}
       <div className="absolute top-0 right-0 p-2">
-        <div className='bg-white'>
+        <div className='bg-card'>
           <Button variant='outline' size='sm'><Share1Icon className='h-4 w-4 mr-2'/> Share</Button>
         </div>
       </div>
